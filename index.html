@@ -3,6 +3,204 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IMRAN SHAH PRO</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:15px;background:#080b09;color:#f5edda;font-family:Arial}
+.container{max-width:600px;margin:auto}
+.header,.section{background:#111812;border:1px solid #806b38;border-radius:14px;padding:18px;margin-bottom:15px}
+.header{text-align:center;background:linear-gradient(135deg,#111812,#302713)}
+h1{color:#e8c66c;letter-spacing:2px}
+h2,.title{color:#e8c66c}
+.subtitle{color:#aaa;font-size:11px;letter-spacing:3px}
+.status{color:#e8c66c;font-size:12px}
+.title{font-size:14px;margin-bottom:15px}
+.tabs,.pairs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button,select{padding:13px;border-radius:8px;font-weight:bold;cursor:pointer}
+.tab,.pair{background:#1c261f;color:#eee;border:1px solid #555b42}
+.active,.selected{background:#b49345!important;color:#080b09!important}
+select{width:100%;background:#202820;color:#f4d88b;border:1px solid #806b38;margin-top:10px}
+.btn{width:100%;margin-top:12px;padding:15px;background:linear-gradient(90deg,#92712c,#e8c76f);color:#111;border:0}
+.secondary{background:#1d2921;color:#e5c36c;border:1px solid #8b7540}
+.info{color:#aaa;font-size:12px;line-height:1.8}
+.radar{width:155px;height:155px;border:2px solid #b49345;border-radius:50%;margin:20px auto;background:repeating-radial-gradient(circle,#16251b 0 24px,#40503b 25px 26px);position:relative;overflow:hidden}
+.radar:before{content:"";position:absolute;left:50%;top:50%;width:50%;height:50%;transform-origin:top left;background:linear-gradient(135deg,#64d99a88,transparent);animation:scan 3s linear infinite}
+@keyframes scan{to{transform:rotate(360deg)}}
+.analysis{background:#090f0b;padding:14px;border-radius:8px;color:#bbb;font-size:12px;line-height:2}
+.analysis span{color:#e8c66c}
+.signal{text-align:center;padding:20px 10px;background:#0b120d;border:1px solid #806b38;border-radius:12px}
+.direction{font-size:35px;color:#e8c66c}
+.countdown{font-size:55px;color:#e8c66c;font-weight:bold}
+.footer{text-align:center;color:#777;font-size:10px;padding:20px}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+<h1>IMRAN SHAH PRO</h1>
+<div class="subtitle">ADVANCED TRADING TERMINAL</div>
+<br>
+<div class="status">● MARKET DATA NOT CONNECTED</div>
+</div>
+
+<div class="section">
+<div class="title">01 / SELECT MARKET</div>
+<div class="tabs">
+<button class="tab active" onclick="setMarket('LIVE',this)">LIVE MARKET</button>
+<button class="tab" onclick="setMarket('OTC',this)">OTC MARKET</button>
+</div>
+<p class="info" id="marketName">LIVE Market Selected</p>
+</div>
+
+<div class="section">
+<div class="title">02 / MARKET SELECTOR</div>
+<div class="pairs" id="pairs"></div>
+<button class="btn secondary" onclick="scanMarkets()">SCAN MARKETS</button>
+<p class="info" id="scanStatus">Select a pair to begin.</p>
+</div>
+
+<div class="section">
+<div class="title">03 / AI MARKET SCANNING</div>
+<div class="radar"></div>
+<div class="analysis" id="analysis">
+<span>MARKET STRUCTURE:</span> Waiting for data<br>
+<span>ORDER BLOCK:</span> Waiting for data<br>
+<span>LIQUIDITY:</span> Waiting for data<br>
+<span>FVG:</span> Waiting for data<br>
+<span>RSI / EMA:</span> Waiting for data<br>
+<span>MARKET QUALITY:</span> Not evaluated
+</div>
+</div>
+
+<div class="section">
+<div class="title">04 / TRADE SETTINGS</div>
+<label class="info">SELECT EXPIRY</label>
+<select id="expiry">
+<option value="5">5 Seconds</option>
+<option value="10">10 Seconds</option>
+<option value="15" selected>15 Seconds</option>
+<option value="60">1 Minute</option>
+</select>
+
+<button class="btn" onclick="generateSignal()">GENERATE SIGNAL</button>
+
+<div class="signal">
+<h2>TRADE SIGNAL</h2>
+<div class="direction" id="direction">WAIT</div>
+<p class="info" id="signalMessage">Waiting for verified market data.</p>
+<h2>ENTRY COUNTDOWN</h2>
+<div class="countdown" id="timer">00:05</div>
+<p class="info" id="entryStatus">Trade entry disabled.</p>
+<p class="info">EXPIRY: <span id="expiryText">15 Seconds</span></p>
+</div>
+</div>
+
+<div class="section">
+<div class="title">05 / SIGNAL HISTORY</div>
+<div id="history" class="info">No signals generated yet.</div>
+</div>
+
+<div class="footer">
+IMRAN SHAH PRO<br>
+DISCIPLINE • ANALYSIS • RISK MANAGEMENT<br>
+DEMO INTERFACE — LIVE DATA CONNECTION REQUIRED
+</div>
+</div>
+
+<script>
+let market="LIVE";
+let selectedPair="";
+
+const livePairs=[
+"EUR/USD","GBP/USD","USD/JPY","AUD/USD",
+"USD/CAD","EUR/GBP","NZD/USD","EUR/JPY"
+];
+
+const otcPairs=[
+"EUR/USD OTC","GBP/USD OTC","USD/JPY OTC",
+"AUD/USD OTC","USD/CAD OTC","EUR/GBP OTC",
+"NZD/USD OTC","EUR/JPY OTC"
+];
+
+function setMarket(type,button){
+market=type;
+document.querySelectorAll(".tab").forEach(
+b=>b.classList.remove("active")
+);
+button.classList.add("active");
+selectedPair="";
+document.getElementById("marketName").innerText=type+" Market Selected";
+renderPairs();
+}
+
+function renderPairs(){
+const list=market==="LIVE"?livePairs:otcPairs;
+const box=document.getElementById("pairs");
+box.innerHTML="";
+list.forEach(pair=>{
+const b=document.createElement("button");
+b.className="pair";
+b.innerText=pair;
+b.onclick=()=>{
+selectedPair=pair;
+document.querySelectorAll(".pair").forEach(
+x=>x.classList.remove("selected")
+);
+b.classList.add("selected");
+};
+box.appendChild(b);
+});
+}
+
+function scanMarkets(){
+if(!selectedPair){
+alert("Please select a pair first.");
+return;
+}
+document.getElementById("scanStatus").innerText=
+"Selected: "+selectedPair+" | "+market+
+" | Real market data connection required.";
+
+document.getElementById("analysis").innerHTML=
+"<span>PAIR:</span> "+selectedPair+
+"<br><span>MARKET:</span> "+market+
+"<br><span>TREND:</span> Waiting for real data"+
+"<br><span>ORDER BLOCK:</span> Waiting for real data"+
+"<br><span>LIQUIDITY:</span> Waiting for real data"+
+"<br><span>FVG:</span> Waiting for real data"+
+"<br><span>MARKET QUALITY:</span> Not evaluated";
+}
+
+function generateSignal(){
+if(!selectedPair){
+alert("Please select a pair first.");
+return;
+}
+document.getElementById("direction").innerText="WAIT";
+document.getElementById("signalMessage").innerText=
+"Real market data is not connected. No verified BUY or SELL signal.";
+document.getElementById("entryStatus").innerText=
+"Trade entry disabled until real data is available.";
+document.getElementById("timer").innerText="00:05";
+
+let e=document.getElementById("expiry").value;
+document.getElementById("expiryText").innerText=
+e==="60"?"1 Minute":e+" Seconds";
+
+const row=document.createElement("p");
+row.innerText=selectedPair+" | WAIT | Data unavailable";
+document.getElementById("history").prepend(row);
+}
+
+renderPairs();
+</script>
+</body>
+ </html><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Imran Shah Pro</title>
 
 <style>
