@@ -187,36 +187,17 @@ document.getElementById("timer").innerText="00:05";
 let e=document.getElementById("expiry").value;
 document.getElementById("expiryText").innerText=
 e==="60"?"1 Minute":e+" Seconds";
-
 const row=document.createElement("p");
 row.innerText=selectedPair+" | WAIT | Data unavailable";
+documet.getElementById("history").prepend(row);
 document.getElementById("history").prepend(row);
 }
-
 renderPairs();
 </script>
+<script src="scanner.js"></script>
 </body>
- </html><!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Imran Shah Pro</title>
+</html>
 
-<style>
-*{box-sizing:border-box}
-body{
- margin:0;padding:15px;background:#080b09;
- color:#f5edda;font-family:Arial,sans-serif
-}
-.container{max-width:600px;margin:auto}
-.header,.section{
- background:#111812;border:1px solid #806b38;
- border-radius:14px;padding:18px;margin-bottom:15px
-}
-.header{
- text-align:center;
- background:linear-gradient(135deg,#111812,#302713)
-}
-h1{color:#e8c66c;letter-spacing:2px}
-h2,.
+ 
+ 
+ 
